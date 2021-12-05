@@ -1,0 +1,43 @@
+{
+  "name": "koishi-plugin-image-search",
+  "description": "Image searching plugin for Koishi",
+  "version": "4.0.0-beta.2",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "author": "Shigma <shigma10826@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koishijs/koishi-plugin-image-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/koishijs/koishi-plugin-image-search/issues"
+  },
+  "homepage": "https://github.com/koishijs/koishi-plugin-image-search",
+  "keywords": [
+    "bot",
+    "qqbot",
+    "cqhttp",
+    "coolq",
+    "chatbot",
+    "koishi",
+    "plugin",
+    "image",
+    "search",
+    "sausenao",
+    "whatanime",
+    "ascii2d",
+    "pixiv"
+  ],
+  "peerDependencies": {
+    "koishi": "^4.0.0-beta.4"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.10",
+    "iqdb-client": "^1.0.5",
+    "nhentai-api": "^3.0.2"
+  }
+}
