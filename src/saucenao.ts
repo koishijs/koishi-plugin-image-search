@@ -110,12 +110,14 @@ async function search(url: string, session: Session, config: saucenao.Config, mi
     keys.add(api_key)
     try {
       return await session.app.http.get<Response>('https://saucenao.com/search.php', {
-        db: 999,
-        numres: 3,
-        api_key,
-        url,
-        output_type: Params.Type.json,
-      } as Params)
+        params: {
+          db: 999,
+          numres: 3,
+          api_key,
+          url,
+          output_type: Params.Type.json,
+        } as Params,
+      })
     } catch (err) {
       if (!err.response) {
         if (!(err instanceof Error) || !err.message.includes('ECONNRESET') && !err.message.includes('ECONNREFUSED')) {
