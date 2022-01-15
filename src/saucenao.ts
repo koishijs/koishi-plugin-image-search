@@ -104,7 +104,7 @@ async function search(url: string, session: Session, config: saucenao.Config, mi
   for (let i = 0; i < config.maxTrials || 3; ++i) {
     const api_key = app.bail('saucenao/get-key')
     if (!api_key || keys.has(api_key)) {
-      if (!mixed) return session.send('当前没有可用的 API 令牌，请联系机器人作者。')
+      if (!mixed) await session.send('当前没有可用的 API 令牌，请联系机器人作者。')
       return
     }
     keys.add(api_key)
@@ -123,17 +123,22 @@ async function search(url: string, session: Session, config: saucenao.Config, mi
         if (!(err instanceof Error) || !err.message.includes('ECONNRESET') && !err.message.includes('ECONNREFUSED')) {
           logger.warn(`[error] saucenao:`, err)
         }
-        return session.send('无法连接服务器。')
+        await session.send('无法连接服务器。')
+        return
       } else if (err.response.status === 403) {
         const result = app.bail('saucenao/drop-key', api_key)
-        if (result) return session.send(result)
+        if (result) {
+          await session.send(result)
+          return
+        }
       } else if (err.response.status !== 429) {
         logger.warn(`[error] saucenao:`, err.response.data)
-        return session.send('由于未知原因搜索失败。')
+        await session.send('由于未知原因搜索失败。')
+        return
       }
     }
   }
-  return session.send('搜索次数已达单位时间上限，请稍候再试。')
+  await session.send('搜索次数已达单位时间上限，请稍候再试。')
 }
 
 async function saucenao(url: string, session: Session, config: saucenao.Config, mixed?: boolean): Promise<boolean | void> {
@@ -143,15 +148,21 @@ async function saucenao(url: string, session: Session, config: saucenao.Config, 
   if (!data.results) {
     const message = data.header.message.toLowerCase()
     if (message.includes('you need an image')) {
-      return session.send('没有传入图片 URL。')
+      await session.send('没有传入图片 URL。')
+      return
     } else if (message.includes('supplied url is not usable')) {
-      return session.send('无法使用传入的图片 URL。')
+      await session.send('无法使用传入的图片 URL。')
+      return
     }
     logger.warn(`[error] saucenao:`, data.header)
-    return session.send('由于未知原因搜索失败：' + data.header.message)
+    await session.send('由于未知原因搜索失败：' + data.header.message)
+    return
   }
 
-  if (!data.results.length) return session.send('没有找到搜索结果。')
+  if (!data.results.length) {
+    await session.send('没有找到搜索结果。')
+    return
+  }
 
   const { long_remaining, short_remaining } = data.header
 

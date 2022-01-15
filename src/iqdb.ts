@@ -22,11 +22,11 @@ async function makeSearch(url: string): Promise<string> {
 }
 
 export default async function (url: string, session: Session) {
-  let result: string = 'iqdb.org 搜图\n'
+  let result = 'iqdb.org 搜图\n'
   try {
     result += await makeSearch(url)
   } catch (err) {
     result += '搜图时遇到问题：' + err
   }
-  return session.send(result)
+  return result
 }

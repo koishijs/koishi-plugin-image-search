@@ -1,13 +1,7 @@
-import { Context, Session, Command, makeArray, segment, Schema } from 'koishi'
+import { Context, Session, Command, makeArray, segment, Schema, Awaitable } from 'koishi'
 import ascii2d from './ascii2d'
 import saucenao from './saucenao'
 import iqdb from './iqdb'
-
-declare module 'koishi' {
-  interface Modules {
-    'image-search': typeof import('.')
-  }
-}
 
 export const name = 'image-search'
 
@@ -58,16 +52,17 @@ export function apply(ctx: Context, config: Config = {}) {
 
   const pendings = new Set<string>()
 
-  type SearchCallback = (url: string, session: Session, config: Config) => Promise<boolean | void>
+  type SearchCallback = (url: string, session: Session, config: Config) => Awaitable<string | boolean | void>
 
   async function searchUrl(session: Session, url: string, callback: SearchCallback) {
     const id = session.channelId
     pendings.add(id)
     try {
-      await callback(url, session, config)
+      const result = await callback(url, session, config)
+      if (typeof result === 'string') return result
     } catch (error) {
       ctx.logger('search').warn(error)
-      await session.send('搜索失败。')
+      return '搜索失败。'
     } finally {
       pendings.delete(id)
     }
