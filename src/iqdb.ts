@@ -3,7 +3,9 @@ import { segment, Session } from 'koishi'
 
 async function makeSearch(url: string): Promise<string> {
   const res = await searchPic(url, { lib: 'www' })
-  if (res.ok || (res.data && res.data.length > 1)) {
+  if ('err' in res) {
+    return '搜图时遇到问题：' + res.err
+  } else if (res.ok || (res.data && res.data.length > 1)) {
     const data: any = res.data[1]
     const { head, sourceUrl, img, type, source } = data
 
@@ -14,8 +16,6 @@ async function makeSearch(url: string): Promise<string> {
       '色图：' + (type.toLowerCase() === 'safe' ? '否' : '是⚠️'),
       '源站：' + source.join(', '),
     ].join('\n')
-  } else if (res.err) {
-    return '搜图时遇到问题：' + res.err
   } else {
     return '搜图时遇到未知问题。'
   }
