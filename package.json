@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-image-search",
   "description": "Image searching plugin for Koishi",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
