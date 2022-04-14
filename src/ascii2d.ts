@@ -3,7 +3,7 @@ import Cheerio from 'cheerio'
 import { Session, Logger } from 'koishi'
 import { getShareText } from './utils'
 
-//lock openssl version to pass cloudflare
+// lock openssl version to pass cloudflare
 tls.DEFAULT_MAX_VERSION = 'TLSv1.1'
 tls.DEFAULT_MIN_VERSION = 'TLSv1.1'
 
@@ -13,10 +13,10 @@ const logger = new Logger('search')
 export default async function (url: string, session: Session) {
   try {
     const tasks: Promise<string[]>[] = []
-    const response = await session.app.http.axios(`${baseURL}/search/url/${encodeURIComponent(url)}`,{
+    const response = await session.app.http.axios(`${baseURL}/search/url/${encodeURIComponent(url)}`, {
       headers: {
-        'User-Agent': 'PostmanRuntime/7.29.0'
-      }
+        'User-Agent': 'PostmanRuntime/7.29.0',
+      },
     })
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(response.data)))
     try {
