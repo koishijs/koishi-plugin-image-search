@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-image-search",
   "description": "Image searching plugin for Koishi",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -39,5 +39,8 @@
     "cheerio": "^1.0.0-rc.10",
     "iqdb-client": "^1.1.0",
     "nhentai-api": "^3.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.23"
   }
 }
