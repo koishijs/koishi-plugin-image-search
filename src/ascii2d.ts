@@ -1,11 +1,6 @@
-import tls from 'tls'
 import Cheerio from 'cheerio'
 import { Session, Logger } from 'koishi'
 import { getShareText } from './utils'
-
-// lock openssl version to pass cloudflare
-tls.DEFAULT_MAX_VERSION = 'TLSv1.1'
-tls.DEFAULT_MIN_VERSION = 'TLSv1.1'
 
 const baseURL = 'https://ascii2d.net'
 const logger = new Logger('search')
