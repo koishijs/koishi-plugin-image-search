@@ -31,6 +31,9 @@ export default async function (url: string, session: Session) {
 function getDetail(html: string) {
   const $ = Cheerio.load(html, { decodeEntities: false })
   const $box = $($('.item-box')[1])
+  if ($box.length === 0) {
+    throw new Error('cannot find images in web page')
+  }
   const thumbnail = baseURL + $box.find('.image-box img').attr('src')
   const $link = $box.find('.detail-box a')
   const $title = $($link[0])
