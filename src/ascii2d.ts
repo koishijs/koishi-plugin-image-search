@@ -32,7 +32,8 @@ function getDetail(html: string) {
   const $ = load(html, { decodeEntities: false })
   const $box = $($('.item-box')[1])
   if ($box.length === 0) {
-    throw new Error('cannot find images in web page')
+    logger.warn('[error] ascii2d bovw cannot find images in web page')
+    return '没有找到相似图片。'
   }
   const thumbnail = baseURL + $box.find('.image-box img').attr('src')
   const $link = $box.find('.detail-box a')
