@@ -1,4 +1,4 @@
-import Cheerio from 'cheerio'
+import { load } from 'cheerio'
 import { Session, Logger } from 'koishi'
 import { getShareText } from './utils'
 
@@ -15,7 +15,7 @@ export default async function (url: string, session: Session) {
     })
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(response.data)))
     try {
-      const bovwURL = response.request.res.responseUrl.replace('/color/', '/bovw/')
+      const bovwURL = getTokujouUrl(response.data)
       const bovwHTML = await session.app.http.get(bovwURL)
       tasks.push(session.send('ascii2d 特征检索\n' + getDetail(bovwHTML)))
     } catch (err) {
@@ -29,7 +29,7 @@ export default async function (url: string, session: Session) {
 }
 
 function getDetail(html: string) {
-  const $ = Cheerio.load(html, { decodeEntities: false })
+  const $ = load(html, { decodeEntities: false })
   const $box = $($('.item-box')[1])
   if ($box.length === 0) {
     throw new Error('cannot find images in web page')
@@ -46,4 +46,11 @@ function getDetail(html: string) {
     thumbnail,
     authorUrl: $author.attr('href'),
   })
+}
+
+function getTokujouUrl(html: string) {
+  const $ = load(html, { decodeEntities: false })
+  const $box = $($('.item-box')[1])
+  const $link = $($box.find('.btn-block a')[1])
+  return baseURL + $link.attr('href')
 }
