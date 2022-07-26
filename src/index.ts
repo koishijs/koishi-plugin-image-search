@@ -1,23 +1,15 @@
-import { Context, Session, Command, makeArray, segment, Schema, Awaitable } from 'koishi'
+import { Context, Session, Command, makeArray, segment, Awaitable } from 'koishi'
 import ascii2d from './ascii2d'
 import saucenao from './saucenao'
 import iqdb from './iqdb'
+import { Config } from './utils'
+
+export { Config }
 
 export const name = 'image-search'
 
-export interface Config extends saucenao.Config {
-  saucenaoApiKey?: string | string[]
-}
-
-export const Config = Schema.intersect([
-  Schema.object({
-    saucenaoApiKey: Schema.array(Schema.string()).description('可用的 saucenao api key 列表。'),
-  }),
-  saucenao.Config,
-])
-
 async function mixedSearch(url: string, session: Session, config: Config) {
-  return await saucenao(url, session, config, true) && ascii2d(url, session)
+  return await saucenao(url, session, config, true) && ascii2d(url, session, config)
 }
 
 export function apply(ctx: Context, config: Config = {}) {
