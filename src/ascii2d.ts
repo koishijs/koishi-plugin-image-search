@@ -31,6 +31,10 @@ export default async function (url: string, session: Session, config: Config) {
 function getDetail(html: string, config: OutputConfig) {
   const $ = load(html, { decodeEntities: false })
   const $box = $($('.item-box')[1])
+  if ($box.length === 0) {
+    logger.warn('[error] ascii2d bovw cannot find images in web page')
+    return '没有找到相似图片。'
+  }
   const thumbnail = baseURL + $box.find('.image-box img').attr('src')
   const $link = $box.find('.detail-box a')
   const $title = $($link[0])
