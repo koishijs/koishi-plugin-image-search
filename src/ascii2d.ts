@@ -8,14 +8,14 @@ const logger = new Logger('search')
 export default async function (url: string, session: Session, config: Config) {
   try {
     const tasks: Promise<string[]>[] = []
-    const response = await session.app.http.axios(`${baseURL}/search/url/${encodeURIComponent(url)}`, {
+    const colorHTML = await session.app.http.get(`${baseURL}/search/url/${encodeURIComponent(url)}`, {
       headers: {
         'User-Agent': 'PostmanRuntime/7.29.0',
       },
     })
-    tasks.push(session.send('ascii2d 色合检索\n' + getDetail(response.data, config.output)))
+    tasks.push(session.send('ascii2d 色合检索\n' + getDetail(colorHTML, config.output)))
     try {
-      const bovwURL = getTokujouUrl(response.data)
+      const bovwURL = getTokujouUrl(colorHTML)
       const bovwHTML = await session.app.http.get(bovwURL)
       tasks.push(session.send('ascii2d 特征检索\n' + getDetail(bovwHTML, config.output)))
     } catch (err) {
