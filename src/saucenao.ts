@@ -4,7 +4,8 @@ import nhentai from './nhentai'
 import danbooru from './danbooru'
 import konachan from './konachan'
 import { Session, Logger, Schema } from 'koishi'
-import { getShareText, checkHost } from './utils'
+import { getShareText, checkHost, OutputConfig } from './utils'
+import { Config } from '.'
 
 declare module 'koishi' {
   interface Events {
@@ -141,7 +142,7 @@ async function search(url: string, session: Session, config: saucenao.Config, mi
   await session.send('搜索次数已达单位时间上限，请稍候再试。')
 }
 
-async function saucenao(url: string, session: Session, config: saucenao.Config, mixed?: boolean): Promise<boolean | void> {
+async function saucenao(url: string, session: Session, config: Config, mixed?: boolean): Promise<boolean | void> {
   const data = await search(url, session, config, mixed)
   if (!data) return
 
@@ -179,7 +180,7 @@ async function saucenao(url: string, session: Session, config: saucenao.Config, 
     if (mixed) output[0] += '将自动使用 ascii2d 继续进行搜索。'
   }
 
-  if (!lowSimilarity || !mixed) await handleResult(data.results[0], session, output)
+  if (!lowSimilarity || !mixed) await handleResult(data.results[0], session, output, config.output)
 
   if (long_remaining < 20) {
     output.push(`注意：24h 内搜图次数仅剩 ${long_remaining} 次。`)
@@ -191,7 +192,7 @@ async function saucenao(url: string, session: Session, config: saucenao.Config, 
   return !highSimilarity && mixed
 }
 
-async function handleResult(result: Result, session: Session, output: string[]) {
+async function handleResult(result: Result, session: Session, output: string[], config: OutputConfig) {
   const { header, data } = result
   const { thumbnail, similarity } = header
   const { ext_urls, title, member_id, member_name, eng_name, jp_name } = data
@@ -231,7 +232,7 @@ async function handleResult(result: Result, session: Session, output: string[]) 
       imageUrl,
       thumbnail,
       title: `(${similarity}%) ${bookName}`,
-    }))
+    }, config))
   } else {
     const displayTitle = member_name
       ? `「${title}」/「${member_name}」`
@@ -242,7 +243,7 @@ async function handleResult(result: Result, session: Session, output: string[]) 
       title: `(${similarity}%) ${displayTitle}`,
       authorUrl: member_id && checkHost(imageUrl, 'pixiv.net') && `https://www.pixiv.net/u/${member_id}`,
       source,
-    }))
+    }, config))
   }
 }
 
@@ -254,10 +255,14 @@ namespace saucenao {
   }
 
   export const Config: Schema<Config> = Schema.object({
+    saucenaoApiKey: Schema.union([
+      Schema.array(String),
+      Schema.transform(String, key => [key]),
+    ]).description('可用的 saucenao api key 列表。'),
     maxTrials: Schema.natural().description('最大尝试访问次数。').default(3),
-    lowSimilarity: Schema.number().description('相似度较低的认定标准（百分比）。当 saucenao 给出的相似度低于这个值时，将不会显示 saucenao 本身的搜索结果（但是 ascii2d 的结果会显示）。').default(40),
+    lowSimilarity: Schema.number().description('相似度较低的认定标准（百分比）。当 saucenao 给出的相似度低于这个值时，将不会显示 saucenao 本身的搜索结果 (但是 ascii2d 的结果会显示)。').default(40),
     highSimilarity: Schema.number().description('相似度较高的认定标准（百分比）。当 saucenao 给出的相似度高于这个值时，将不会使用 ascii2d 再次搜索。').default(60),
-  })
+  }).description('搜索设置')
 }
 
 export default saucenao

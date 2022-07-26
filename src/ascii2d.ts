@@ -1,11 +1,11 @@
 import { load } from 'cheerio'
 import { Session, Logger } from 'koishi'
-import { getShareText } from './utils'
+import { Config, getShareText, OutputConfig } from './utils'
 
 const baseURL = 'https://ascii2d.net'
 const logger = new Logger('search')
 
-export default async function (url: string, session: Session) {
+export default async function (url: string, session: Session, config: Config) {
   try {
     const tasks: Promise<string[]>[] = []
     const response = await session.app.http.axios(`${baseURL}/search/url/${encodeURIComponent(url)}`, {
@@ -13,11 +13,11 @@ export default async function (url: string, session: Session) {
         'User-Agent': 'PostmanRuntime/7.29.0',
       },
     })
-    tasks.push(session.send('ascii2d 色合检索\n' + getDetail(response.data)))
+    tasks.push(session.send('ascii2d 色合检索\n' + getDetail(response.data, config.output)))
     try {
       const bovwURL = getTokujouUrl(response.data)
       const bovwHTML = await session.app.http.get(bovwURL)
-      tasks.push(session.send('ascii2d 特征检索\n' + getDetail(bovwHTML)))
+      tasks.push(session.send('ascii2d 特征检索\n' + getDetail(bovwHTML, config.output)))
     } catch (err) {
       logger.warn(`[error] ascii2d bovw ${err}`)
     }
@@ -28,7 +28,7 @@ export default async function (url: string, session: Session) {
   }
 }
 
-function getDetail(html: string) {
+function getDetail(html: string, config: OutputConfig) {
   const $ = load(html, { decodeEntities: false })
   const $box = $($('.item-box')[1])
   const thumbnail = baseURL + $box.find('.image-box img').attr('src')
@@ -42,7 +42,7 @@ function getDetail(html: string) {
       : $title.html(),
     thumbnail,
     authorUrl: $author.attr('href'),
-  })
+  }, config)
 }
 
 function getTokujouUrl(html: string) {

@@ -1,4 +1,4 @@
-import { segment } from 'koishi'
+import { Schema, segment } from 'koishi'
 
 export function getLink(url: string) {
   const pidSearch = /pixiv.+illust_id=(\d+)/.exec(url)
@@ -8,6 +8,42 @@ export function getLink(url: string) {
   return url
 }
 
+export interface OutputConfig {
+  thumbnail?: boolean
+}
+
+export const OutputConfig: Schema<OutputConfig> = Schema.object({
+  thumbnail: Schema.boolean().default(true).description('是否在搜索结果中显示缩略图。'),
+}).description('输出设置')
+
+export interface SearchConfig {
+  saucenaoApiKey?: string | string[]
+  maxTrials?: number
+  lowSimilarity?: number
+  highSimilarity?: number
+}
+
+export const SearchConfig: Schema<SearchConfig> = Schema.object({
+  saucenaoApiKey: Schema.union([
+    Schema.array(String),
+    Schema.transform(String, key => [key]),
+  ]).description('可用的 saucenao api key 列表。'),
+  maxTrials: Schema.natural().description('最大尝试访问次数。').default(3),
+  lowSimilarity: Schema.number().description('相似度较低的认定标准 (百分比)。当 saucenao 给出的相似度低于这个值时，将不会显示 saucenao 本身的搜索结果 (但是 ascii2d 的结果会显示)。').default(40),
+  highSimilarity: Schema.number().description('相似度较高的认定标准 (百分比)。当 saucenao 给出的相似度高于这个值时，将不会使用 ascii2d 再次搜索。').default(60),
+}).description('搜索设置')
+
+export interface Config extends SearchConfig {
+  output?: OutputConfig
+}
+
+export const Config: Schema<Config> = Schema.intersect([
+  SearchConfig,
+  Schema.object({
+    output: OutputConfig,
+  }),
+])
+
 export interface ShareData {
   imageUrl: string
   title: string
@@ -16,8 +52,9 @@ export interface ShareData {
   source?: string | void
 }
 
-export function getShareText({ imageUrl, title, thumbnail, authorUrl, source }: ShareData) {
-  const output = [title, segment.image(thumbnail)]
+export function getShareText({ imageUrl, title, thumbnail, authorUrl, source }: ShareData, config: OutputConfig) {
+  const output = [title]
+  if (config.thumbnail) output.push(segment.image(thumbnail))
   if (imageUrl) output.push(`链接：${getLink(imageUrl)}`)
   if (authorUrl) output.push(`作者：${getLink(authorUrl)}`)
   if (source) output.push(`来源：${getLink(source)}`)
