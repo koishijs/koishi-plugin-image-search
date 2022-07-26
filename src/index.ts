@@ -9,7 +9,7 @@ export interface Config extends saucenao.Config {
   saucenaoApiKey?: string | string[]
 }
 
-export const Config = Schema.intersect([
+export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     saucenaoApiKey: Schema.array(Schema.string()).description('可用的 saucenao api key 列表。'),
   }),
