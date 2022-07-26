@@ -27,10 +27,10 @@ export const SearchConfig: Schema<SearchConfig> = Schema.object({
   saucenaoApiKey: Schema.union([
     Schema.array(String),
     Schema.transform(String, key => [key]),
-  ]).description('可用的 saucenao api key 列表。'),
+  ]).description('可用的 SauceNAO API key 列表。'),
   maxTrials: Schema.natural().description('最大尝试访问次数。').default(3),
-  lowSimilarity: Schema.number().description('相似度较低的认定标准 (百分比)。当 saucenao 给出的相似度低于这个值时，将不会显示 saucenao 本身的搜索结果 (但是 ascii2d 的结果会显示)。').default(40),
-  highSimilarity: Schema.number().description('相似度较高的认定标准 (百分比)。当 saucenao 给出的相似度高于这个值时，将不会使用 ascii2d 再次搜索。').default(60),
+  lowSimilarity: Schema.number().description('相似度较低的认定标准 (百分比)。当 SauceNAO 给出的相似度低于这个值时，将不会显示 SauceNAO 本身的搜索结果 (但是 ascii2d 的结果会显示)。').default(40),
+  highSimilarity: Schema.number().description('相似度较高的认定标准 (百分比)。当 SauceNAO 给出的相似度高于这个值时，将不会使用 ascii2d 再次搜索。').default(60),
 }).description('搜索设置')
 
 export interface Config extends SearchConfig {

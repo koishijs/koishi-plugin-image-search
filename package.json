@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-image-search",
   "description": "Image searching plugin for Koishi",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -19,9 +19,6 @@
   "homepage": "https://github.com/koishijs/koishi-plugin-image-search",
   "keywords": [
     "bot",
-    "qqbot",
-    "cqhttp",
-    "coolq",
     "chatbot",
     "koishi",
     "plugin",
@@ -30,8 +27,17 @@
     "sausenao",
     "whatanime",
     "ascii2d",
+    "danbooru",
+    "konachan",
+    "nhentai",
     "pixiv"
   ],
+  "koishi": {
+    "description": {
+      "en": "Search for images on saucenao, ascii2d, danbooru, konachan, nhentai",
+      "zh": "搜索图片，支持 saucenao, ascii2d, danbooru, konachan, nhentai 等多个平台"
+    }
+  },
   "peerDependencies": {
     "koishi": "^4.8.2"
   },

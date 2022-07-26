@@ -4,10 +4,10 @@
 
 koishi-plugin-image-search 封装了一系列搜图相关的指令，目前支持以下平台：
 
-- [saucenao](https://saucenao.com/)
+- [SauceNAO](https://saucenao.com/)
 - [ascii2d](https://ascii2d.net/)
 - [danbooru](https://github.com/danbooru/danbooru)
-- [konachan](http://konachan.net/)
+- [Konachan](http://konachan.net/)
 - [nhentai](https://nhentai.net/)
 
 参考了 [Tsuk1ko](https://github.com/Tsuk1ko/CQ-picfinder-robot) 的机器人实现。
@@ -52,27 +52,13 @@ saucenao 指令是 image-search 指令的子指令。它使用 saucenao 进行�
 
 ascii2d 指令也是 image-search 指令的子指令。它使用 ascii2d 进行图片搜索，机制与上面完全相同。
 
-## 参数配置
-
-```ts
-export interface SaucenaoConfig extends CommandConfig {
-  /** 相似度较低的认定标准（百分比），默认值为 40 */
-  lowSimilarity?: number
-  /** 相似度较高的认定标准（百分比），默认值为 60 */
-  highSimilarity?: number
-  /** SauceNAO 的 APIKey。
-    * SauceNAO 的 APIKey 可以通过注册 SauceNAO 账户的方式获取。
-    * SauceNAO 账户可以在以下网址注册：
-    * https://saucenao.com/user.php
-    * 注册后即可在 API 页中获取到 APIKey。
-    * saucenaoApiKey 需要以数组的方式填入单个或多个 APIKey，
-    * 如果填入多个 APIKey，则可以实现负载均衡
-    */
-  saucenaoApiKey?: string[]
-}
-```
-
 ## 配置项
+
+### saucenaoApiKey
+
+- 类型: `string | string[]`
+
+可用的 SauceNAO API key 列表。SauceNAO 的 API key 可以通过[注册 SauceNAO 账户](https://saucenao.com/user.php)的方式获取。注册后即可在 API 页中获取到 API key。如果填入多个 API key，则会自动进行负载均衡。
 
 ### lowSimilarity
 
@@ -87,3 +73,10 @@ export interface SaucenaoConfig extends CommandConfig {
 - 默认值: `60`
 
 相似度较高的认定标准（百分比）。
+
+### output.thumbnail
+
+- 类型: `boolean`
+- 默认值: `true`
+
+是否在搜索结果中显示缩略图。
