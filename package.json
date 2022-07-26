@@ -17,6 +17,9 @@
     "url": "https://github.com/koishijs/koishi-plugin-image-search/issues"
   },
   "homepage": "https://github.com/koishijs/koishi-plugin-image-search",
+  "scripts": {
+    "build": "tsc -b"
+  },
   "keywords": [
     "bot",
     "chatbot",
