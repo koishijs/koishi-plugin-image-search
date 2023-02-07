@@ -1,6 +1,7 @@
 import { load } from 'cheerio'
 import { Session, Logger } from 'koishi'
 import { Config, getShareText, OutputConfig } from './utils'
+import FormData from "form-data"
 
 const baseURL = 'https://ascii2d.net'
 const logger = new Logger('search')
@@ -8,22 +9,30 @@ const logger = new Logger('search')
 export default async function (url: string, session: Session, config: Config) {
   try {
     const tasks: Promise<string[]>[] = []
-    const colorHTML = await session.app.http.get(`${baseURL}/search/url/${encodeURIComponent(url)}`, {
+    const form = new FormData();
+    form.append('file', (await session.app.http.get(url, { responseType: 'stream' })));
+    const colorHTML = await session.app.http.post(`${baseURL}/search/file`, form, {
       headers: {
         'User-Agent': 'PostmanRuntime/7.29.0',
+        ...form.getHeaders()
       },
     })
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(colorHTML, config.output)))
     try {
       const bovwURL = getTokujouUrl(colorHTML)
-      const bovwHTML = await session.app.http.get(bovwURL)
+      const bovwHTML = await session.app.http.get(bovwURL, {
+        headers: {
+          'User-Agent': 'PostmanRuntime/7.29.0',
+          "Content-Type": "multipart/form-data"
+        },
+      })
       tasks.push(session.send('ascii2d 特征检索\n' + getDetail(bovwHTML, config.output)))
     } catch (err) {
       logger.warn(`[error] ascii2d bovw ${err}`)
     }
     await Promise.all(tasks)
   } catch (err) {
-    logger.warn(`[error] ascii2d color ${err}`)
+    logger.warn(`[error] ascii2d color ${err}`, err)
     return '访问失败。'
   }
 }
@@ -52,6 +61,5 @@ function getDetail(html: string, config: OutputConfig) {
 function getTokujouUrl(html: string) {
   const $ = load(html, { decodeEntities: false })
   const $box = $($('.item-box')[1])
-  const $link = $($box.find('.btn-block a')[1])
-  return baseURL + $link.attr('href')
+  return `${baseURL}/search/bovw/${$box.find(".hash").text().trim()}`
 }
