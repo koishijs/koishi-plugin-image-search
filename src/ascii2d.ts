@@ -61,6 +61,6 @@ function getDetail(html: string, config: OutputConfig) {
 
 function getTokujouUrl(html: string) {
   const $ = load(html, { decodeEntities: false })
-  const $box = $($('.item-box')[1])
-  return `${baseURL}/search/bovw/${$box.find('.hash').text().trim()}`
+  return `${baseURL}/search/bovw/${$($(".hash")[0]).text().trim()}`
 }
+
