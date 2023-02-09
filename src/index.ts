@@ -32,14 +32,14 @@ export function apply(ctx: Context, config: Config = {}) {
     return '令牌失效导致访问失败，请联系机器人作者。'
   })
 
-  ctx.command('search [image]', '搜图片')
+  ctx.command('search [image:text]', '搜图片')
     .shortcut('搜图', { fuzzy: true })
     .action(search(mixedSearch))
-  ctx.command('search/saucenao [image]', '使用 saucenao 搜图')
+  ctx.command('search/saucenao [image:text]', '使用 saucenao 搜图')
     .action(search(saucenao))
-  ctx.command('search/ascii2d [image]', '使用 ascii2d 搜图')
+  ctx.command('search/ascii2d [image:text]', '使用 ascii2d 搜图')
     .action(search(ascii2d))
-  ctx.command('search/iqdb [image]', '使用 iqdb 搜图')
+  ctx.command('search/iqdb [image:text]', '使用 iqdb 搜图')
     .action(search(iqdb))
 
   const pendings = new Set<string>()
@@ -61,11 +61,11 @@ export function apply(ctx: Context, config: Config = {}) {
   }
 
   function search(callback: SearchCallback): Command.Action {
-    return async ({ session }) => {
+    return async ({ session }, image) => {
       const id = session.channelId
       if (pendings.has(id)) return '存在正在进行的查询，请稍后再试。'
 
-      const code = segment.from(session.content, { type: 'image' })
+      const [code] = segment.select(image, 'image')
       if (code && code.data.url) {
         pendings.add(id)
         return searchUrl(session, code.data.url, callback)
