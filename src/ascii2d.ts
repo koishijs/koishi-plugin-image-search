@@ -19,7 +19,7 @@ export default async function (url: string, session: Session, config: Config) {
     })
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(colorHTML, config.output)))
     try {
-      const bovwURL = getTokujouUrl(colorHTML)
+      const bovwURL = getTokuchouUrl(colorHTML)
       const bovwHTML = await session.app.http.get(bovwURL, {
         headers: {
           'User-Agent': 'PostmanRuntime/7.29.0',
@@ -59,7 +59,7 @@ function getDetail(html: string, config: OutputConfig) {
   }, config)
 }
 
-function getTokujouUrl(html: string) {
+function getTokuchouUrl(html: string) {
   const $ = load(html, { decodeEntities: false })
   return `${baseURL}/search/bovw/${$($(".hash")[0]).text().trim()}`
 }
