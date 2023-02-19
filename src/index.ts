@@ -65,16 +65,16 @@ export function apply(ctx: Context, config: Config = {}) {
       const id = session.channelId
       if (pendings.has(id)) return '存在正在进行的查询，请稍后再试。'
 
-      const [code] = segment.select(image, 'image')
-      if (code && code.data.url) {
+      const [code] = segment.select(image || [], 'image')
+      if (code && code.attrs.url) {
         pendings.add(id)
         return searchUrl(session, code.data.url, callback)
       }
 
       const dispose = session.middleware(({ content }, next) => {
         dispose()
-        const code = segment.from(content, { type: 'image' })
-        if (!code || !code.data.url) return next()
+        const [code] = segment.select(content || [], 'image')
+        if (!code || !code.attrs.url) return next()
         return searchUrl(session, code.data.url, callback)
       })
 
