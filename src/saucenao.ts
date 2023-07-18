@@ -3,8 +3,8 @@
 import nhentai from './nhentai'
 import danbooru from './danbooru'
 import konachan from './konachan'
-import { Session, Logger, Schema } from 'koishi'
-import { getShareText, checkHost, OutputConfig } from './utils'
+import { Logger, Quester, Schema, Session } from 'koishi'
+import { checkHost, getShareText, OutputConfig } from './utils'
 import { Config } from '.'
 
 declare module 'koishi' {
@@ -99,7 +99,7 @@ interface Params {
   url: string
 }
 
-async function search(url: string, session: Session, config: saucenao.Config, mixed?: boolean) {
+async function search(http: Quester, url: string, session: Session, config: saucenao.Config, mixed?: boolean) {
   const { app } = session
   const keys = new Set<string>()
   for (let i = 0; i < config.maxTrials || 3; ++i) {
@@ -110,7 +110,7 @@ async function search(url: string, session: Session, config: saucenao.Config, mi
     }
     keys.add(api_key)
     try {
-      return await session.app.http.get<Response>('https://saucenao.com/search.php', {
+      return await http.get<Response>('https://saucenao.com/search.php', {
         params: {
           db: 999,
           numres: 3,
@@ -142,8 +142,8 @@ async function search(url: string, session: Session, config: saucenao.Config, mi
   await session.send('搜索次数已达单位时间上限，请稍候再试。')
 }
 
-async function saucenao(url: string, session: Session, config: Config, mixed?: boolean): Promise<boolean | void> {
-  const data = await search(url, session, config, mixed)
+async function saucenao(http: Quester, url: string, session: Session, config: Config, mixed?: boolean): Promise<boolean | void> {
+  const data = await search(http, url, session, config, mixed)
   if (!data) return
 
   if (!data.results) {

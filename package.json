@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-image-search",
   "description": "Image searching plugin for Koishi",
-  "version": "4.2.2",
+  "version": "4.2.3",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -50,8 +50,8 @@
     "nhentai-api": "^3.4.3"
   },
   "devDependencies": {
-    "@types/node": "^18.11.18",
-    "koishi": "^4.11.4",
-    "typescript": "^4.9.4"
+    "@types/node": "^20.4.2",
+    "koishi": "^4.13.8",
+    "typescript": "^5.1.6"
   }
 }

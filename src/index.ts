@@ -1,4 +1,4 @@
-import { Context, Session, Command, makeArray, segment, Awaitable } from 'koishi'
+import { Awaitable, Command, Context, makeArray, Quester, segment, Session } from 'koishi'
 import ascii2d from './ascii2d'
 import saucenao from './saucenao'
 import iqdb from './iqdb'
@@ -8,12 +8,13 @@ export { Config }
 
 export const name = 'image-search'
 
-async function mixedSearch(url: string, session: Session, config: Config) {
-  return await saucenao(url, session, config, true) && ascii2d(url, session, config)
+async function mixedSearch(http: Quester, url: string, session: Session, config: Config) {
+  return await saucenao(http, url, session, config, true) && ascii2d(http, url, session, config)
 }
 
 export function apply(ctx: Context, config: Config = {}) {
   let index = 0
+  const http = ctx.http.extend(config)
   const keys = makeArray(config.saucenaoApiKey)
 
   ctx.on('saucenao/get-key', () => {
@@ -44,13 +45,13 @@ export function apply(ctx: Context, config: Config = {}) {
 
   const pendings = new Set<string>()
 
-  type SearchCallback = (url: string, session: Session, config: Config) => Awaitable<string | boolean | void>
+  type SearchCallback = (http: Quester, url: string, session: Session, config: Config) => Awaitable<string | boolean | void>
 
   async function searchUrl(session: Session, url: string, callback: SearchCallback) {
     const id = session.channelId
     pendings.add(id)
     try {
-      const result = await callback(url, session, config)
+      const result = await callback(http, url, session, config)
       if (typeof result === 'string') return result
     } catch (error) {
       ctx.logger('search').warn(error)

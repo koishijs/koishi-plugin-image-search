@@ -1,17 +1,17 @@
 import { load } from 'cheerio'
-import { Session, Logger } from 'koishi'
+import { Logger, Quester, Session } from 'koishi'
 import { Config, getShareText, OutputConfig } from './utils'
 import FormData from 'form-data'
 
 const baseURL = 'https://ascii2d.net'
 const logger = new Logger('search')
 
-export default async function (url: string, session: Session, config: Config) {
+export default async function (http: Quester, url: string, session: Session, config: Config) {
   try {
     const tasks: Promise<string[]>[] = []
     const form = new FormData()
-    form.append('file', await session.app.http.get(url, { responseType: 'stream' }))
-    const colorHTML = await session.app.http.post(`${baseURL}/search/file`, form, {
+    form.append('file', await http.get(url, { responseType: 'stream' }))
+    const colorHTML = await http.post(`${baseURL}/search/file`, form, {
       headers: {
         'User-Agent': 'PostmanRuntime/7.29.0',
         ...form.getHeaders(),
@@ -20,10 +20,10 @@ export default async function (url: string, session: Session, config: Config) {
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(colorHTML, config.output)))
     try {
       const bovwURL = getTokuchouUrl(colorHTML)
-      const bovwHTML = await session.app.http.get(bovwURL, {
+      const bovwHTML = await http.get(bovwURL, {
         headers: {
           'User-Agent': 'PostmanRuntime/7.29.0',
-          "Content-Type": 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
         },
       })
       tasks.push(session.send('ascii2d 特征检索\n' + getDetail(bovwHTML, config.output)))
@@ -61,6 +61,5 @@ function getDetail(html: string, config: OutputConfig) {
 
 function getTokuchouUrl(html: string) {
   const $ = load(html, { decodeEntities: false })
-  return `${baseURL}/search/bovw/${$($(".hash")[0]).text().trim()}`
+  return `${baseURL}/search/bovw/${$($('.hash')[0]).text().trim()}`
 }
-

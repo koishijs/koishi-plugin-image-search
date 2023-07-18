@@ -1,5 +1,5 @@
 import { searchPic } from 'iqdb-client'
-import { segment, Session } from 'koishi'
+import { Quester, segment, Session } from 'koishi'
 
 async function makeSearch(url: string): Promise<string> {
   const res = await searchPic(url, { lib: 'www' })
@@ -21,7 +21,7 @@ async function makeSearch(url: string): Promise<string> {
   }
 }
 
-export default async function (url: string, session: Session) {
+export default async function (http: Quester, url: string, session: Session) {
   let result = 'iqdb.org 搜图\n'
   try {
     result += await makeSearch(url)

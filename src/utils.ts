@@ -1,4 +1,4 @@
-import { Schema, segment } from 'koishi'
+import { Quester, Schema, segment } from 'koishi'
 
 export function getLink(url: string) {
   const pidSearch = /pixiv.+illust_id=(\d+)/.exec(url)
@@ -33,7 +33,7 @@ export const SearchConfig: Schema<SearchConfig> = Schema.object({
   highSimilarity: Schema.number().description('相似度较高的认定标准 (百分比)。当 SauceNAO 给出的相似度高于这个值时，将不会使用 ascii2d 再次搜索。').default(60),
 }).description('搜索设置')
 
-export interface Config extends SearchConfig {
+export interface Config extends SearchConfig, Quester.Config {
   output?: OutputConfig
 }
 
@@ -42,6 +42,7 @@ export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     output: OutputConfig,
   }),
+  Quester.createConfig(),
 ])
 
 export interface ShareData {
