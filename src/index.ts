@@ -1,4 +1,4 @@
-import { Awaitable, Command, Context, makeArray, Quester, segment, Session } from 'koishi'
+import { Awaitable, Command, Context, h, makeArray, Quester, Session } from 'koishi'
 import ascii2d from './ascii2d'
 import saucenao from './saucenao'
 import iqdb from './iqdb'
@@ -7,6 +7,7 @@ import { Config } from './utils'
 export { Config }
 
 export const name = 'image-search'
+export const inject = ['http']
 
 async function mixedSearch(http: Quester, url: string, session: Session, config: Config) {
   return await saucenao(http, url, session, config, true) && ascii2d(http, url, session, config)
@@ -61,22 +62,27 @@ export function apply(ctx: Context, config: Config = {}) {
     }
   }
 
+  function getUrl(input: string) {
+    const [el] = h.select(input || [], 'image, img')
+    return el?.attrs.src || el?.attrs.url
+  }
+
   function search(callback: SearchCallback): Command.Action {
     return async ({ session }, image) => {
       const id = session.channelId
       if (pendings.has(id)) return '存在正在进行的查询，请稍后再试。'
 
-      const [code] = segment.select(image || [], 'image')
-      if (code && code.attrs.url) {
+      const url = getUrl(image)
+      if (url) {
         pendings.add(id)
-        return searchUrl(session, code.data.url, callback)
+        return searchUrl(session, url, callback)
       }
 
       const dispose = session.middleware(({ content }, next) => {
         dispose()
-        const [code] = segment.select(content || [], 'image')
-        if (!code || !code.attrs.url) return next()
-        return searchUrl(session, code.data.url, callback)
+        const url = getUrl(content)
+        if (!url) return next()
+        return searchUrl(session, url, callback)
       })
 
       return '请发送图片。'
