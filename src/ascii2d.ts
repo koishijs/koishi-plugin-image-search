@@ -12,7 +12,7 @@ export default async function (http: Quester, url: string, session: Session, con
       headers: {
           'User-Agent': 'PostmanRuntime/7.29.0',
       },
-    });
+    })
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(colorHTML, config.output)))
     try {
       const bovwURL = getTokuchouUrl(colorHTML)
