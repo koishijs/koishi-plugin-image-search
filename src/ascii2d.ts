@@ -1,7 +1,6 @@
 import { load } from 'cheerio'
 import { Logger, Quester, Session } from 'koishi'
 import { Config, getShareText, OutputConfig } from './utils'
-import FormData from 'form-data'
 
 const baseURL = 'https://ascii2d.net'
 const logger = new Logger('search')
@@ -9,12 +8,9 @@ const logger = new Logger('search')
 export default async function (http: Quester, url: string, session: Session, config: Config) {
   try {
     const tasks: Promise<string[]>[] = []
-    const form = new FormData()
-    form.append('file', await http.get(url, { responseType: 'stream' }))
-    const colorHTML = await http.post(`${baseURL}/search/file`, form, {
+    const colorHTML = await http.get(`${baseURL}/search/url/${encodeURIComponent(url)}`,{
       headers: {
-        'User-Agent': 'PostmanRuntime/7.29.0',
-        ...form.getHeaders(),
+          'User-Agent': 'PostmanRuntime/7.29.0',
       },
     })
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(colorHTML, config.output)))
