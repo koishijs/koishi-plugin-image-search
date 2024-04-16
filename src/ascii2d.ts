@@ -10,7 +10,7 @@ export default async function (http: Quester, url: string, session: Session, con
     const tasks: Promise<string[]>[] = []
     const colorHTML = await http.get(`${baseURL}/search/url/${encodeURIComponent(url)}`,{
       headers: {
-          'User-Agent': 'PostmanRuntime/7.29.0',
+        'User-Agent': 'PostmanRuntime/7.29.0',
       },
     })
     tasks.push(session.send('ascii2d 色合检索\n' + getDetail(colorHTML, config.output)))
