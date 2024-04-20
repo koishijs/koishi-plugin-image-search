@@ -52,6 +52,15 @@ export function apply(ctx: Context, config: Config = {}) {
     const id = session.channelId
     pendings.add(id)
     try {
+      const isPrivate = await http.isLocal(url)
+      if (isPrivate) {
+        const { data, mime } = await http.file(url)
+        const formData = new FormData()
+        formData.append('photo', new Blob([data], { type: mime }))
+        formData.append('isAjax', 'true')
+        const uploadResponse = await http.post('https://imgops.com/store', formData)
+        url = 'https:/' + uploadResponse
+      }
       const result = await callback(http, url, session, config)
       if (typeof result === 'string') return result
     } catch (error) {
