@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-image-search",
   "description": "Image searching plugin for Koishi",
-  "version": "4.3.1",
+  "version": "4.3.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -42,7 +42,7 @@
     }
   },
   "peerDependencies": {
-    "koishi": "^4.17.0"
+    "koishi": "^4.17.4"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
@@ -50,8 +50,8 @@
     "nhentai-api": "^3.4.3"
   },
   "devDependencies": {
-    "@types/node": "^20.10.2",
-    "koishi": "^4.17.0",
-    "typescript": "^5.3.2"
+    "@types/node": "^20.12.7",
+    "koishi": "^4.17.4",
+    "typescript": "^5.4.5"
   }
 }
