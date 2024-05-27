@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "iqdb-client": "^1.1.0",
+    "iqdb-client": "^3.0.0",
     "nhentai-api": "^3.4.3"
   },
   "devDependencies": {
