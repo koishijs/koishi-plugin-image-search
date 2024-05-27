@@ -1,4 +1,4 @@
-import { searchPic } from 'iqdb-client'
+import { searchPic, IQDB_RESULT_TYPE } from 'iqdb-client'
 import { Quester, segment, Session } from 'koishi'
 
 async function makeSearch(url: string): Promise<string> {
@@ -6,8 +6,9 @@ async function makeSearch(url: string): Promise<string> {
   if ('err' in res) {
     return '搜图时遇到问题：' + res.err
   } else if (res.ok || (res.data && res.data.length > 1)) {
-    const data: any = res.data[1]
-    const { head, sourceUrl, img, type, source } = data
+    const data = res.data[1]
+    const { head, sourceUrl, img, source } = data
+    const type: IQDB_RESULT_TYPE = (data as any).type
 
     return [
       segment('image', { url: 'https://iqdb.org' + img }),
