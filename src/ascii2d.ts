@@ -35,6 +35,7 @@ export default async function (http: Quester, url: string, session: Session, con
 }
 
 function getDetail(html: string, config: OutputConfig) {
+  // @ts-ignore
   const $ = load(html, { decodeEntities: false })
   const $box = $($('.item-box')[1])
   if ($box.length === 0) {
@@ -56,6 +57,7 @@ function getDetail(html: string, config: OutputConfig) {
 }
 
 function getTokuchouUrl(html: string) {
+  // @ts-ignore
   const $ = load(html, { decodeEntities: false })
   return `${baseURL}/search/bovw/${$($('.hash')[0]).text().trim()}`
 }
