@@ -86,7 +86,11 @@ export default async function (http: HTTP, url: string, session: Session) {
   try {
     result += await makeSearch(http, url, session.app)
   } catch (err) {
-    result += '搜图时遇到问题：' + err
+    if (http.isError(err) && err.response.data?.msg) {
+      result += '搜图时遇到问题：' + err.response.data.msg
+    } else {
+      result += '搜图时遇到问题：' + err
+    }
   }
   return result
 }
