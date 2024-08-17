@@ -64,7 +64,7 @@ async function makeSearch(http: HTTP, url: string, ctx: Context): Promise<string
     responseType: 'json',
     params: {
       force_one: 1,
-      model: 'anime',
+      model: 'anime_model_lovelive',
       ai_detect: 0
     } as AnimeTraceRequest
   })
