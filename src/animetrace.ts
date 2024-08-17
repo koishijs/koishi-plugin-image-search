@@ -35,8 +35,8 @@ interface ResponseDataChar {
 }
 
 async function crop(ctx: Context, image: Image, box: ResponseData['box']) {
-  const width = image.naturalWidth
-  const height = image.naturalHeight
+  const width = image.naturalWidth ?? image['width']
+  const height = image.naturalHeight ?? image['height']
   const outputWidth = width * (box[2] - box[0])
   const outputHeight = height * (box[3] - box[1])
   const canvas = await ctx.canvas.createCanvas(outputWidth, outputHeight)
