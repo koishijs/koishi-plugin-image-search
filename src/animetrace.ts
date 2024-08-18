@@ -52,9 +52,7 @@ async function crop(ctx: Context, image: Image, box: ResponseData['box']): Promi
     outputWidth,
     outputHeight
   )
-  const dataURL = await canvas.toDataURL('image/png')
-  canvas.dispose()
-  return dataURL
+  return await canvas.toDataURL('image/png')
 }
 
 async function makeSearch(http: HTTP, url: string, ctx: Context): Promise<string> {
@@ -87,7 +85,6 @@ async function makeSearch(http: HTTP, url: string, ctx: Context): Promise<string
       h.text(`来源：${v.char[0].cartoonname}`)
     )
   }
-  image.dispose()
   return elements.join('\n')
 }
 
