@@ -72,6 +72,8 @@ async function makeSearch(http: HTTP, url: string, ctx: Context): Promise<string
 
   if (res.code !== 0 && res.msg) {
     return '搜图时遇到问题：' + res.msg
+  } else if (res.data.length === 0) {
+    return '没有识别到角色'
   }
 
   const image = await ctx.canvas.loadImage(data)
