@@ -35,7 +35,7 @@ interface ResponseDataChar {
   acc: number
 }
 
-async function crop(ctx: Context, image: Image, box: ResponseData['box']) {
+async function crop(ctx: Context, image: Image, box: ResponseData['box']): Promise<string> {
   const width: number = image.naturalWidth ?? image['width']
   const height: number = image.naturalHeight ?? image['height']
   const outputWidth = width * (box[2] - box[0])
@@ -52,7 +52,9 @@ async function crop(ctx: Context, image: Image, box: ResponseData['box']) {
     outputWidth,
     outputHeight
   )
-  return await canvas.toBuffer('image/png')
+  const dataURL = await canvas.toDataURL('image/png')
+  canvas.dispose()
+  return dataURL
 }
 
 async function makeSearch(http: HTTP, url: string, ctx: Context): Promise<string> {
@@ -80,11 +82,12 @@ async function makeSearch(http: HTTP, url: string, ctx: Context): Promise<string
   const elements = []
   for (const v of res.data) {
     elements.push(
-      h.image(await crop(ctx, image, v.box), 'image/png'),
+      h.image(await crop(ctx, image, v.box)),
       h.text(`角色：${v.char[0].name}`),
       h.text(`来源：${v.char[0].cartoonname}`)
     )
   }
+  image.dispose()
   return elements.join('\n')
 }
 
