@@ -20,6 +20,7 @@ interface AnimeTraceResponse {
   code: number
   data: ResponseData[]
   new_code: number
+  msg?: string
 }
 
 interface ResponseData {
@@ -35,8 +36,8 @@ interface ResponseDataChar {
 }
 
 async function crop(ctx: Context, image: Image, box: ResponseData['box']) {
-  const width = image.naturalWidth ?? image['width']
-  const height = image.naturalHeight ?? image['height']
+  const width: number = image.naturalWidth ?? image['width']
+  const height: number = image.naturalHeight ?? image['height']
   const outputWidth = width * (box[2] - box[0])
   const outputHeight = height * (box[3] - box[1])
   const canvas = await ctx.canvas.createCanvas(outputWidth, outputHeight)
@@ -44,12 +45,12 @@ async function crop(ctx: Context, image: Image, box: ResponseData['box']) {
     image,
     width * box[0],
     height * box[1],
-    width * (box[2] - box[0]),
-    height * (box[3] - box[1]),
+    outputWidth,
+    outputHeight,
     0,
     0,
-    width * (box[2] - box[0]),
-    height * (box[3] - box[1])
+    outputWidth,
+    outputHeight
   )
   return await canvas.toBuffer('image/png')
 }
@@ -68,6 +69,10 @@ async function makeSearch(http: HTTP, url: string, ctx: Context): Promise<string
       ai_detect: 0
     } as AnimeTraceRequest
   })
+
+  if (res.code !== 0 && res.msg) {
+    return '搜图时遇到问题：' + res.msg
+  }
 
   const image = await ctx.canvas.loadImage(data)
   const elements = []
