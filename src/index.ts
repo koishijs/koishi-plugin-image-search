@@ -1,4 +1,4 @@
-import { Awaitable, Command, Context, Dict, makeArray, Quester, Session } from 'koishi'
+import { Awaitable, Command, Context, Dict, h, makeArray, Quester, Session } from 'koishi'
 import ascii2d from './ascii2d'
 import saucenao from './saucenao'
 import iqdb from './iqdb'
@@ -74,6 +74,11 @@ export function apply(ctx: Context, config: Config = {}) {
     }
   }
 
+  function getUrl(input: string) {
+    const [el] = h.select(input || [], 'image, img')
+    return el?.attrs.src || el?.attrs.url
+  }
+
   function search(callback: SearchCallback): Command.Action {
     return async ({ session }, image: Dict) => {
       const id = session.channelId
@@ -86,8 +91,9 @@ export function apply(ctx: Context, config: Config = {}) {
 
       const dispose = session.middleware(({ content }, next) => {
         dispose()
-        if (!image?.src) return next()
-        return searchUrl(session, image.src, callback)
+        const url = getUrl(content)
+        if (!url) return next()
+        return searchUrl(session, url, callback)
       })
 
       return '请发送图片。'
