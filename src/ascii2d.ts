@@ -35,7 +35,7 @@ export default async function (http: Quester, url: string, session: Session, con
 }
 
 function getDetail(html: string, config: OutputConfig) {
-  const $ = load(html, { decodeEntities: false })
+  const $ = load(html)
   const $box = $($('.item-box')[1])
   if ($box.length === 0) {
     logger.warn('[error] ascii2d bovw cannot find images in web page')
@@ -56,6 +56,6 @@ function getDetail(html: string, config: OutputConfig) {
 }
 
 function getTokuchouUrl(html: string) {
-  const $ = load(html, { decodeEntities: false })
+  const $ = load(html)
   return `${baseURL}/search/bovw/${$($('.hash')[0]).text().trim()}`
 }

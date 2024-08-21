@@ -1,13 +1,14 @@
-import { Awaitable, Command, Context, h, makeArray, Quester, Session } from 'koishi'
+import { Awaitable, Command, Context, Dict, h, makeArray, Quester, Session } from 'koishi'
 import ascii2d from './ascii2d'
 import saucenao from './saucenao'
 import iqdb from './iqdb'
+import animetrace from './animetrace'
 import { Config } from './utils'
 
 export { Config }
 
 export const name = 'image-search'
-export const inject = ['http']
+export const inject = ['http', 'canvas']
 
 async function mixedSearch(http: Quester, url: string, session: Session, config: Config) {
   return await saucenao(http, url, session, config, true) && ascii2d(http, url, session, config)
@@ -34,15 +35,17 @@ export function apply(ctx: Context, config: Config = {}) {
     return '令牌失效导致访问失败，请联系机器人作者。'
   })
 
-  ctx.command('search [image:text]', '搜图片')
+  ctx.command('search [image:image]', '搜图片')
     .shortcut('搜图', { fuzzy: true })
     .action(search(mixedSearch))
-  ctx.command('search/saucenao [image:text]', '使用 saucenao 搜图')
+  ctx.command('search/saucenao [image:image]', '使用 saucenao 搜图')
     .action(search(saucenao))
-  ctx.command('search/ascii2d [image:text]', '使用 ascii2d 搜图')
+  ctx.command('search/ascii2d [image:image]', '使用 ascii2d 搜图')
     .action(search(ascii2d))
-  ctx.command('search/iqdb [image:text]', '使用 iqdb 搜图')
+  ctx.command('search/iqdb [image:image]', '使用 iqdb 搜图')
     .action(search(iqdb))
+  ctx.command('search/animetrace [image:image]', '使用 animetrace 搜图')
+    .action(search(animetrace))
 
   const pendings = new Set<string>()
 
@@ -77,14 +80,13 @@ export function apply(ctx: Context, config: Config = {}) {
   }
 
   function search(callback: SearchCallback): Command.Action {
-    return async ({ session }, image) => {
+    return async ({ session }, image: Dict) => {
       const id = session.channelId
       if (pendings.has(id)) return '存在正在进行的查询，请稍后再试。'
 
-      const url = getUrl(image)
-      if (url) {
+      if (image?.src) {
         pendings.add(id)
-        return searchUrl(session, url, callback)
+        return searchUrl(session, image.src, callback)
       }
 
       const dispose = session.middleware(({ content }, next) => {

@@ -45,11 +45,12 @@
     "koishi": "^4.17.4"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "^1.0.0",
     "iqdb-client": "^3.0.0",
     "nhentai-api": "^3.4.3"
   },
   "devDependencies": {
+    "@koishijs/canvas": "^0.2.0",
     "@types/node": "^20.12.7",
     "koishi": "^4.17.4",
     "typescript": "^5.4.5"
